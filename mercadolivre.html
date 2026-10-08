@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="pt-BR">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>Agents Company</title>
+<style>body{font:16px -apple-system,system-ui,sans-serif;background:#0b0b0b;color:#ddd;display:grid;place-items:center;height:90vh;margin:0}a{color:#8ab4ff}</style>
+<p id="msg">Voltando para o Agents Company…</p>
+<script>
+// Mercado Livre only accepts a fixed HTTPS redirect, so its login lands here and this page hands the result to the
+// Agents Company app on the user's own computer (http://127.0.0.1:<port>/callback). The port travels in `state`
+// ("<port>.<random>"). Nothing is stored or sent anywhere else; the code is useless without the PKCE verifier that
+// only the app holds.
+(function () {
+  var q = new URLSearchParams(location.search);
+  var state = q.get("state") || "";
+  var port = state.split(".")[0];
+  if (!/^\d{4,5}$/.test(port) || +port < 1024 || +port > 65535) {
+    document.getElementById("msg").textContent = "Este link de login é inválido. Volte ao Agents Company e tente de novo.";
+    return;
+  }
+  var out = new URLSearchParams();
+  ["code", "state", "error", "error_description"].forEach(function (k) { if (q.has(k)) out.set(k, q.get(k)); });
+  var target = "http://127.0.0.1:" + port + "/callback?" + out.toString();
+  history.replaceState(null, "", location.pathname);   // the code leaves the address bar and history
+  location.replace(target);
+  setTimeout(function () {
+    document.getElementById("msg").innerHTML = 'Se o Agents Company não abriu, <a href="' + target + '">clique aqui</a>.';
+  }, 3000);
+})();
+</script>
+</html>
